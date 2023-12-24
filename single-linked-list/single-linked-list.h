@@ -87,29 +87,11 @@ public:
     }
 
     SingleLinkedList(std::initializer_list<Type> values) : size_(values.size()) {
-        Node* last = nullptr;
-        for (auto it = values.begin(); it != values.end(); ++it) {
-                Node* node = new Node(*it, nullptr);
-            if (!(head_.next_node)) {
-                head_.next_node = node;
-            } else {
-                last->next_node = node;
-            }
-            last = node;
-        }
+        Assign(values.begin(), values.end());
     }
 
     SingleLinkedList(const SingleLinkedList& other) : size_(other.GetSize()) {
-        Node* last = nullptr;
-        for (Node* n = other.head_.next_node; n != nullptr; n = n->next_node) {
-            Node* node = new Node(n->value, nullptr);
-            if (!(head_.next_node)) {
-                head_.next_node = node;
-            } else {
-                last->next_node = node;
-            }
-            last = node;
-        }
+        Assign(other.begin(), other.end());
     }
 
     ~SingleLinkedList() {
@@ -152,12 +134,12 @@ public:
     }
 
     void PopFront() noexcept {
-        if(!IsEmpty()) {
-            Node* tmp = head_.next_node;
-            head_.next_node = tmp->next_node;
-            delete tmp;
-            --size_;
-        }
+        assert(!IsEmpty());
+
+        Node* tmp = head_.next_node;
+        head_.next_node = tmp->next_node;
+        delete tmp;
+        --size_;
     }
 
     using value_type = Type;
@@ -225,6 +207,20 @@ public:
 private:
     Node head_;
     size_t size_;
+
+    template <class InputIt>
+    void Assign (InputIt first, InputIt last) {
+        Node* last_new = nullptr;
+        for (auto it = first; it != last; ++it) {
+            Node* node = new Node(*it, nullptr);
+            if (!(head_.next_node)) {
+                head_.next_node = node;
+            } else {
+                last_new->next_node = node;
+            }
+            last_new = node;
+        }
+    }
 };
 
 template <typename Type>
